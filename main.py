@@ -17,6 +17,7 @@ def gen_next(question):
         raw=True,
         prompt=chat,
         options={
+            'temperature': 2, # system prompt is long enough that a very high temperature is tolerable
             'stop': ['<EOT>', 'Alex:', 'Olivia:', '\n\n'],
         }
     )
