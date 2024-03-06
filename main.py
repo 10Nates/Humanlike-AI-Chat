@@ -1,4 +1,5 @@
 import ollama
+from termcolor import colored as c
 
 model = 'dolphin-mixtral:latest'
 template = """
@@ -8,7 +9,7 @@ prompt_prompter = """Write detailed lore for a character named Alex, a professor
 
 Do not answer the question, rather write a background story and upbringing that led to Alex being an expert in the field that said question involves."""
 
-system = "About Alex: "
+system = ""
 chat_history = ""
 #with open("system.txt", "r") as file:
 #    system += file.read()
@@ -20,7 +21,7 @@ def gen_system_prompt(question):
         raw=False, # standard question
         prompt=prompt_prompter.format(question=question)
     )
-    system += response['response']
+    system = "About Alex: " + response['response']
     system += "\n\nYou are Alex, having a conversation with Olivia, a colleague.\n"
     
     
@@ -47,14 +48,17 @@ def gen_next(question):
 def main():
     while (True):
         # input
-        question = input("You/Olivia ('exit' to leave): ")
-        if (question == 'exit'):
+        question = input(c("You/Olivia ('/prompt' for last system prompt, '/exit' to leave): ", "green"))
+        if (question == '/exit'):
             break
-        gen_system_prompt(question)
-        response = gen_next(question)
-        print(f"Bot/Alex: {response}")
+        elif (question == "/prompt"):
+            print(f"Last system prompt: {system}")
+        else:
+            gen_system_prompt(question)
+            response = gen_next(question)
+            print(c("Bot/Alex: ", "light_blue") + response)
     
-    print("Bot/Alex: Goodbye!") # give it a little character
+    print(c("Bot/Alex: ", "light_blue") + "Goodbye!") # give it a little character
 
 if __name__ == "__main__":
     main()
