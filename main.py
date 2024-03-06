@@ -4,6 +4,9 @@ model = 'dolphin-mixtral:latest'
 template = """
 Olivia: {question}
 Alex: """
+prompt_prompter = """Write detailed lore for a character named Alex, a professor at MIT who was just been asked the following question: "{question}"
+
+Do not answer the question, rather write a background story and upbringing that led to Alex being an expert in the field that said question involves."""
 
 system = "About Alex: "
 chat_history = ""
@@ -12,9 +15,6 @@ chat_history = ""
 
 def gen_system_prompt(question):
     global system
-    prompt_prompter = """Write detailed lore for a character named Alex, a professor at MIT who was just been asked the following question: "{question}"
-
-Do not answer the question, rather write a background story and upbringing that led to Alex being an expert in the field that said question involves."""
     response = ollama.generate(
         model=model,
         raw=False, # standard question
@@ -37,7 +37,7 @@ def gen_next(question):
             'temperature': 3, 
             # system prompt is long enough that a very high temperature is tolerable
             # without the long prompt this temperature quickly devolves into complete gibberish.
-            'stop': ['<EOT>', 'Alex:', 'Olivia:', '\n\n'],
+            'stop': ['<EOT>', 'Alex:', 'Olivia:'],
         }
     )
     chat_history += response['response']
