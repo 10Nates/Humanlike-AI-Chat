@@ -15,8 +15,8 @@ Humanlike AI Chat is a terminal-based LLM UI designed to study how to bypass AI 
 
 - Run the script with `python main.py` or use `python main.py --model [model]` to set a different model
 - Type your question and press enter. For the purposes of the tool, you are Olivia and the AI is named Alex.
-- You can enter `/prompt` for the last system prompt, `/exit` to leave
-  - Note on `/prompt`- this is the system prompt that is generated in the first stage of the prompting process. It is regenerated for every prompt and cannot be controlled otherwise. The purpose of this system prompt is to provide "character" to the model that allows it to handle temperature and generate more cohesive responses that align with how a person would respond.
+- You can enter `/prompt` for the generated system prompt, `/exit` to leave
+  - Note on `/prompt`- this is the system prompt that is generated in the first stage of the prompting process. It is generated for the first prompt and cannot be controlled otherwise. The purpose of this system prompt is to provide "character" to the model that allows it to handle temperature and generate more cohesive responses that align with how a person would respond.
 
 ## Disclaimer
 

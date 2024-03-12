@@ -10,10 +10,9 @@ template = """
 Olivia: {question}
 Alex: """
 
-# "Lore" works better. Probably tagging into DnD characters or something.
-prompt_prompter = """Write detailed lore for a character named Alex, an OPINIONED professor at MIT who was just been asked the following question: "{question}"
+prompt_prompter = """Write a biography for a character named Alex, an OPINIONED professor at MIT who was just been asked the following question: "{question}"
 
-Do not answer the question, rather write a background story and upbringing that led to Alex being an expert in the field that said question involves."""
+Do NOT answer the question, and do NOT refer to the question; rather, write a background story and upbringing that led to Alex being an expert in the field that said question involves."""
 
 #globals
 system = ""
@@ -32,9 +31,10 @@ def gen_system_prompt(question):
 def gen_next(question):
     global chat_history
     chat_history += template.format(question=question)
-    response = ollama.generate(
+    stream = ollama.generate(
         model=model,
         raw=True, # using the model template binds it to being more robotic
+        stream=True,
         #system=system,
         prompt=system+chat_history,
         options={
@@ -42,17 +42,18 @@ def gen_next(question):
             # system prompt is long enough that a very high temperature is tolerable.
             # without the long prompt this temperature quickly devolves into complete gibberish.
             'repeat_penalty': 1.2,
-            'stop': ['<EOT>', 'Alex:', 'Olivia:'],
+            'stop': ['<EOT>', 'Alex:', 'Olivia:', '\n\n\n']
         }
     )
-    chat_history += response['response']
-    # print("-------\n" + chat + "\n-----------") # debug
-    return response['response']
+    for chunk in stream:
+        chat_history += chunk['response']
+        yield chunk['response']
 
 def main():
+    prompt_generated = False
     while (True):
         # input
-        question = input(c("You/Olivia ('/prompt' for last system prompt, '/exit' to leave): ", "green"))
+        question = input(c("You/Olivia ('/prompt' for the generated system prompt, '/exit' to leave): ", "green"))
 
         #commands
         if (question == '/exit'):
@@ -64,9 +65,13 @@ def main():
             print(c("Unknown command", "red"))
             continue
 
-        gen_system_prompt(question)
-        response = gen_next(question)
-        print(c("Bot/Alex: ", "light_blue") + response)
+        if not prompt_generated:
+            gen_system_prompt(question)
+            prompt_generated = True
+        print(c("Bot/Alex: ", "light_blue"), end="")
+        for r in gen_next(question):
+            print(r, end="")
+        print() #newline
     
     print(c("Bot/Alex: ", "light_blue") + "Goodbye!") # give it a little character
 
