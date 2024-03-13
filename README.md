@@ -2,7 +2,7 @@
 
 Humanlike AI Chat is a terminal-based LLM UI designed to study how to bypass AI text detection.
 
-**It is not perfect,** and in fact it isn't even especially great (it fails most of the time), but it has a much higher success rate than normal responses at bypassing AI text detection due to its background/lore generation and its ability for a much higher temperature due to its very long system prompt. That being said, its responses are far more human *feeling,* which is why I named it such.
+**It is not perfect,** and in fact it isn't even especially great, but it has a much higher success rate than normal responses at bypassing AI text detection due to its background generation and its ability for a much higher temperature due to its very long system prompt and "decoherence" step. That being said, its responses are far more human *feeling,* which is why I named it such.
 
 ## Installation
 
