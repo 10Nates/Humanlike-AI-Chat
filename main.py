@@ -14,6 +14,9 @@ prompt_prompter = """Write a biography for a character named Alex, an OPINIONED 
 
 Do NOT answer the question, and do NOT refer to the question; rather, write a background story and upbringing that led to Alex being an expert in the field that said question involves."""
 
+sys_decohere = """You are DECOHERE, an AI designed to decohere and disguise AI generated content such that it passes as human. 
+You are to respond to the input with its modification. Do NOT answer questions or modify meanings. Do NOT present yourself in your answer."""
+
 #globals
 system = ""
 chat_history = ""
@@ -26,8 +29,23 @@ def gen_system_prompt(question):
         prompt=prompt_prompter.format(question=question)
     )
     system = response['response']
+    system = "".join(decohere(system))
     system += "\n\n-- The following is a conversation between Alex and Olivia, a colleague and close friend of Alex who have known each other since high school. --\n\n"
-    
+
+def decohere(prompt):
+    stream = ollama.generate(
+        model=model,
+        raw=False, # standard question
+        stream=True,
+        system=sys_decohere,
+        prompt=prompt,
+        options={
+            'temperature': 2 # ramp up
+        }
+    )
+    for chunk in stream:
+        yield chunk['response']
+
 def gen_next(question):
     global chat_history
     chat_history += template.format(question=question)
@@ -69,7 +87,10 @@ def main():
             gen_system_prompt(question)
             prompt_generated = True
         print(c("Bot/Alex: ", "light_blue"), end="")
+        res = ""
         for r in gen_next(question):
+            res += r
+        for r in decohere(res):
             print(r, end="")
         print() #newline
     
