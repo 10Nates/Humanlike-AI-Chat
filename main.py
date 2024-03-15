@@ -77,19 +77,23 @@ def main():
         if (question == '/exit'):
             break
         elif (question == "/prompt"):
-            print(f"Last system prompt: {system}")
+            print(c("System prompt: ", "yellow") + system)
             continue
         elif (question.startswith("/")):
             print(c("Unknown command", "red"))
             continue
 
         if not prompt_generated:
+            print(c("Generating system prompt...", "yellow"))
             gen_system_prompt(question)
             prompt_generated = True
-        print(c("Bot/Alex: ", "light_blue"), end="")
+
         res = ""
+        # print(c("Generating first stage...", "yellow"))
         for r in gen_next(question):
             res += r
+
+        print(c("Bot/Alex: ", "light_blue"), end="")
         for r in decohere(res):
             print(r, end="")
         print() #newline
